@@ -70,12 +70,46 @@ clown_rect = clown_image.get_rect()
 clown_rect.center = (WINDOW_WIDTH//2, WINDOW_HIGHT//2)
 
 # The main gaim loop
+pygame.mixer.music.play(-1, 0.0)
 running = True
 while running:
     # Check to see if the user wants to quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
+            
+        # A click is made
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x = event.pos[0]
+            mouse_y = event.pos[1]
+            
+            # The cloun was clicked
+            if clown_rect.collidepoint(mouse_x, mouse_y):
+                click_sound.play()
+                score += 1
+                clown_velocity += CLOWN_ACCELERATION
+                
+                # Move the clown i a new direction
+                previous_dx = clown_dx
+                previous_dy = clown_dy
+                while(previous_dx == clown_dx and previous_dy == clown_dy):    
+                    clown_dx = random.choice([-1, 1])
+                    clown_dy = random.choice([-1, 1])
+            # We missed the cloun
+            else:
+                miss_sound.play()
+                player_lives -= 1
+                    
+    # Move the clown
+    clown_rect.x += clown_dx*clown_velocity
+    clown_rect.y += clown_dy*clown_velocity
+    
+    # Bounce the clown off the adges of the display
+    if clown_rect.left <= 0 or clown_rect.right >= WINDOW_WIDTH:
+        clown_dx = -1 * clown_dx
+    if clown_rect.top <= 0 or clown_rect.bottom >= WINDOW_HIGHT:
+        clown_dy = -1 * clown_dy
             
     # Blit the background
     display_surface.blit(background_image, background_rect)
