@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 
 # Initialize pygame
 pygame.init()
@@ -13,7 +13,7 @@ pygame.display.set_caption("~~Snake~~")
 FPS = 20
 clock = pygame.time.Clock()
 
-# Set game values
+# Set game values  
 SNAKE_SIZE = 20
 
 head_x = WINDOW_WIDTH//2
@@ -75,15 +75,49 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    
+        #Move the snake
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                snake_dx = -1*SNAKE_SIZE
+                snake_dy = 0
+            if event.key == pygame.K_RIGHT:
+                snake_dx = SNAKE_SIZE
+                snake_dy = 0
+            if event.key == pygame.K_UP:
+                snake_dx = 0
+                snake_dy = -1*SNAKE_SIZE
+            if event.key == pygame.K_DOWN:
+                snake_dx = 0
+                snake_dy = SNAKE_SIZE
+                
+    # Update the x,y position of the snakes head and make a new coordinates
+    head_x += snake_dx
+    head_y += snake_dy
+    head_coord = (head_x, head_y, SNAKE_SIZE, SNAKE_SIZE) 
+            
+     
+     
+    # Check for colli sions 
+    if head_rect.colliderect(apple_rect):
+        score += 1
+        pick_up_sound.play()
+    
+        apple_x = random.randint(0, WINDOW_WIDTH - SNAKE_SIZE)
+        apple_y = random.randint(0, WINDOW_HEIGHT - SNAKE_SIZE)
+        apple_coord = (apple_x, apple_y, SNAKE_SIZE, SNAKE_SIZE)
+        
+    # Fill the surface
     display_surface.fill(WHITE)
+    
     # Blit HUD
     display_surface.blit(title_text, title_rect)
     display_surface.blit(score_text, score_rect)
     
                 
     # Blit assets and still need the body
-    pygame.draw.rect(display_surface, GREEN, head_coord)
-    pygame.draw.rect(display_surface, RED, apple_coord)
+    head_rect = pygame.draw.rect(display_surface, GREEN, head_coord)
+    apple_rect = pygame.draw.rect(display_surface, RED, apple_coord)
     
     # Update display and tick clock
     pygame.display.update()
