@@ -39,7 +39,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 # Set fonts
-font = pygame.font.Font("WashYourHand.ttf", 32)
+font = pygame.font.Font("AttackGraffiti.ttf", 32)
 
 # Set text
 points_text = font.render("Burger Points: " + str(burger_points), True, ORANGE)
@@ -52,13 +52,13 @@ score_rect.topleft = (10, 50)
 
 title_text = font.render("Burger Dog", True, ORANGE)
 title_rect = title_text.get_rect()
-title_rect.centerx = WINDOW_WIDTH//2
+title_rect.centerx = WINDOW_WIDTH//2 + 50
 title_rect.y = 10
 
-eaten_text = font.render("Burgers Eaten: " + str(burger_eaten), True, ORANGE)
+eaten_text = font.render("Eaten: " + str(burger_eaten), True, ORANGE)
 eaten_rect = eaten_text.get_rect()
-eaten_rect.centerx = WINDOW_WIDTH//2
-eaten_rect.y = 10
+eaten_rect.centerx = WINDOW_WIDTH//2 + 20
+eaten_rect.y = 50
 
 lives_text = font.render("Lives: " + str(player_lives), True, ORANGE)
 lives_rect = lives_text.get_rect()
@@ -80,7 +80,7 @@ continue_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 64)
 # Set sound and music 
 bark_sound = pygame.mixer.Sound("noise.wav")
 miss_sound = pygame.mixer.Sound("miss_sound.wav")
-pygame.mixer.music.load("music.music.wav")
+pygame.mixer.music.load("music.wav")
 
 # Set images
 player_image_right = pygame.image.load("dragon_right.png")
@@ -106,7 +106,7 @@ while running:
         display_surface.fill(BLACK)
         
         # Blit the HUD
-        display_surface.blit(points_text, player_rect)
+        display_surface.blit(points_text, points_rect)
         display_surface.blit(score_text, score_rect)
         display_surface.blit(title_text, title_rect)
         display_surface.blit(eaten_text, eaten_rect)
