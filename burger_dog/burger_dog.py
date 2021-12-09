@@ -20,7 +20,7 @@ PLAYER_NORMAL_VELOCITY = 5
 PLAYER_BOOST_VELOCITY = 10
 STARTING_BOOST_LEVEL = 100
 STARTING_BURGER_VELOCITY = 3
-BURGER_ACCELERATION = .25
+BURGER_ACCELERATION = 1
 BUFFER_DISTANCE = 100
 
 score = 0
@@ -141,9 +141,10 @@ while running:
             player_rect.centerx = WINDOW_WIDTH//2
             player_rect.bottom = WINDOW_HEIGHT
             boost_level = STARTING_BOOST_LEVEL
+            bark_sound.play()
             
             burger_rect.topleft = (random.randint(0, WINDOW_WIDTH - 32), -BUFFER_DISTANCE)
-            burger_rect += BURGER_ACCELERATION
+            burger_velocity += BURGER_ACCELERATION
             
             boost_level += 25
             if boost_level > STARTING_BOOST_LEVEL:
@@ -154,6 +155,13 @@ while running:
             score += burger_points
             burger_eaten += 1
             bark_sound.play()
+            
+        # Update HUD
+        points_text = font.render("Burger Points: " + str(burger_points), True, ORANGE)
+        score_text = font.render("Score: " + str(score), True, ORANGE)
+        eaten_text = font.render("Eaten: " + str(burger_eaten), True, ORANGE)
+        lives_text = font.render("Lives: " + str(player_lives), True, ORANGE)
+        boost_text = font.render("Boost: " + str(boost_level), True, ORANGE)
         
         # Fill the surface
         display_surface.fill(BLACK)
