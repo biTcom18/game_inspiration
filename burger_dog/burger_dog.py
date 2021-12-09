@@ -8,9 +8,10 @@ pygame.init()
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 display_surface  = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Burger Dog")
 
 # Set FPS  and clock
-FPS = 30
+FPS = 60
 clock = pygame.time.Clock()
 
 # Set game values
@@ -101,7 +102,59 @@ while running:
         # Check if the user wants to quit
         if event.type == pygame.QUIT:
             running = False
+        
+        # Move the player
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and player_rect.left > 0:
+            player_rect.x -= player_velocity
+            player_image = player_image_left
+        if keys[pygame.K_RIGHT] and player_rect.right < WINDOW_WIDTH:
+            player_rect.x += player_velocity
+            player_image = player_image_right
+        if keys[pygame.K_UP] and player_rect.top > 100:
+            player_rect.y -= player_velocity
+        if keys[pygame.K_DOWN] and player_rect.bottom < WINDOW_HEIGHT:
+            player_rect.y += player_velocity
+        
             
+        
+        # Engage the boost
+        if keys[pygame.K_SPACE] and boost_level > 0:
+            player_velocity = PLAYER_BOOST_VELOCITY
+            boost_level -= 1
+        else:
+            PLAYER_NORMAL_VELOCITY
+        
+        
+        # Move the burger and update burger points
+        burger_rect.y += burger_velocity
+        burger_points = int(burger_velocity*(WINDOW_HEIGHT - burger_rect.y + 100))
+        
+        # Player missed the burger
+        if burger_rect.y > WINDOW_HEIGHT:
+            player_lives -= 1
+            miss_sound.play()
+            
+            burger_rect.topleft = (random.randint(0, WINDOW_WIDTH - 32), -BUFFER_DISTANCE)
+            burger_velocity = STARTING_BOOST_LEVEL
+            
+            player_rect.centerx = WINDOW_WIDTH//2
+            player_rect.bottom = WINDOW_HEIGHT
+            boost_level = STARTING_BOOST_LEVEL
+            
+            burger_rect.topleft = (random.randint(0, WINDOW_WIDTH - 32), -BUFFER_DISTANCE)
+            burger_rect += BURGER_ACCELERATION
+            
+            boost_level += 25
+            if boost_level > STARTING_BOOST_LEVEL:
+                boost_level = STARTING_BOOST_LEVEL
+        
+        # Check for collisions
+        if player_rect.colliderect(burger_rect):
+            score += burger_points
+            burger_eaten += 1
+            bark_sound.play()
+        
         # Fill the surface
         display_surface.fill(BLACK)
         
