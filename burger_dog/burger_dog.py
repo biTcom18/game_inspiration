@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from pygame import font
 
 # Initialize pygame
@@ -20,6 +20,7 @@ PLAYER_BOOST_VELOCITY = 10
 STARTING_BOOST_LEVEL = 100
 STARTING_BURGER_VELOCITY = 3
 BURGER_ACCELERATION = .25
+BUFFER_DISTANCE = 100
 
 score = 0
 burger_points = 0
@@ -68,12 +69,30 @@ boost_rect = boost_text.get_rect()
 boost_rect.topright = (WINDOW_WIDTH - 10, 50) 
 
 game_over_text = font.render("FINAL SCORE: " + str(score), True, ORANGE)
+game_over_rect = game_over_text.get_rect()
+game_over_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+
+continue_text = font.render("Press any key to play again", True, ORANGE)
+continue_rect = continue_text.get_rect()
+continue_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 64)
 
 
 # Set sound and music 
+bark_sound = pygame.mixer.Sound("noise.wav")
+miss_sound = pygame.mixer.Sound("miss_sound.wav")
+pygame.mixer.music.load("music.music.wav")
 
 # Set images
+player_image_right = pygame.image.load("dragon_right.png")
+player_image_left = pygame.image.load("dragon_left.png")
+player_image = player_image_left
+player_rect = player_image.get_rect()
+player_rect.centerx = WINDOW_WIDTH//2
+player_rect.bottom = WINDOW_HEIGHT
 
+burger_image = pygame.image.load("coin.png")
+burger_rect = burger_image.get_rect()
+burger_rect.topleft = (random.randint(0, WINDOW_WIDTH - 32), -BUFFER_DISTANCE)
 
 # The main game loop
 running = True
@@ -82,6 +101,26 @@ while running:
         # Check if the user wants to quit
         if event.type == pygame.QUIT:
             running = False
+            
+        # Fill the surface
+        display_surface.fill(BLACK)
+        
+        # Blit the HUD
+        display_surface.blit(points_text, player_rect)
+        display_surface.blit(score_text, score_rect)
+        display_surface.blit(title_text, title_rect)
+        display_surface.blit(eaten_text, eaten_rect)
+        display_surface.blit(lives_text, lives_rect)
+        display_surface.blit(boost_text, boost_rect)
+        pygame.draw.line(display_surface,WHITE,(0, 100), (WINDOW_WIDTH, 100), 3)
+        
+        # Blit assets
+        display_surface.blit(player_image, player_rect)
+        display_surface.blit(burger_image, burger_rect)
+        
+        # Update the display and tick the clock
+        pygame.display.update()
+        clock.tick(FPS)
             
 # End the game
 pygame.quit()
