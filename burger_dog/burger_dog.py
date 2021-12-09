@@ -65,7 +65,9 @@ lives_rect.topright = (WINDOW_WIDTH - 10, 10)
 
 boost_text = font.render("Boost: " + str(boost_level), True, ORANGE)
 boost_rect = boost_text.get_rect()
-boost_rect.topright = (WINDOW_WIDTH - 10, 50)
+boost_rect.topright = (WINDOW_WIDTH - 10, 50) 
+
+game_over_text = font.render("FINAL SCORE: " + str(score), True, ORANGE)
 
 
 # Set sound and music 
