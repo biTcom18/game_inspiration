@@ -20,7 +20,7 @@ PLAYER_NORMAL_VELOCITY = 5
 PLAYER_BOOST_VELOCITY = 10
 STARTING_BOOST_LEVEL = 100
 STARTING_BURGER_VELOCITY = 3
-BURGER_ACCELERATION = 1
+BURGER_ACCELERATION = .5
 BUFFER_DISTANCE = 100
 
 score = 0
@@ -162,6 +162,34 @@ while running:
         eaten_text = font.render("Eaten: " + str(burger_eaten), True, ORANGE)
         lives_text = font.render("Lives: " + str(player_lives), True, ORANGE)
         boost_text = font.render("Boost: " + str(boost_level), True, ORANGE)
+        
+        # Check for game over
+        if player_lives == 0:
+            game_over_text = font.render("FINAL SCORE: " + str(score), True, ORANGE)
+            display_surface.blit(game_over_text, game_over_rect)
+            display_surface.blit(continue_text, continue_rect)
+            pygame.display.update()
+            
+            # Pause the game until the player presses a key, then reset the game
+            pygame.mixer.music.stop()
+            is_paused = True
+            while is_paused:
+                for event in pygame.event.get():
+                    # The player wants to play again
+                    if event.type == pygame.KEYDOWN:
+                        score = 0
+                        burger_eaten = 0
+                        player_lives = PLAYER_STARTING_LIVES
+                        boost_level = STARTING_BOOST_LEVEL
+                        burger_velocity = STARTING_BURGER_VELOCITY
+                        
+                        is_paused = False
+                    # The player wants to quit
+                    if evevt.type == pygame.QUIT:
+                        is_paused = False
+                        running = False
+                        
+                        
         
         # Fill the surface
         display_surface.fill(BLACK)
