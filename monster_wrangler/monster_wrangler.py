@@ -54,11 +54,33 @@ class Player(pygame.sprite.Sprite):
     """ A player class that the user can control """
     def __init__(self):
         """ Initialize the player """
-        pass
+        super().__init__()
+        self.image = pygame.image.load("knight.png")
+        self.rect = self.image.get_rect()
+        self.rect.centerx = WINDOW_WIDTH//2
+        self.rect.bottom = WINDOW_HEIGHT
+        
+        self.lives = 5
+        self.warps = 2
+        self.velocity = 8
+        
+        self.catch_sound = pygame.mixer.Sound("catch.wav")
+        self.die_sound = pygame.mixer.Sound("die.wav")
+        self.warp_sound = pygame.mixer.Sound("warp.wav") 
     
     def update(self):
         """ Update the player """
-        pass
+        keys = pygame.key.get_pressed()
+        
+        # Move the player within the bounds if tge screen
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self.velocity
+        if keys[pygame.K_RIGHT] and self.rect.right < WINDOW_WIDTH:
+            self.rect.x += self.velocity
+        if keys[pygame.K_UP] and self.rect.top > 0:
+            self.rect.y -= self.velocity
+        if keys[pygame.K_DOWN] and self.rect.bottom < WINDOW_HEIGHT:
+            self.rect.y += self.velocity
     
       
     def warp(self):
@@ -80,6 +102,18 @@ class Monster(pygame.sprite.Sprite):
         pass
     
 
+# Create a player group and Player object
+my_player_group = pygame.sprite.Group()
+my_player = Player()
+my_player_group.add(my_player)
+
+
+# Create a monster group
+my_monster_group = pygame.sprite.Group()
+
+# Create a game object
+my_game = Game()
+
 # The main game loop
 running = True
 while running:
@@ -87,6 +121,22 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
+            
+    # Fill the display
+    display_surface.fill((0, 0, 0))
+    
+    # Update and draw sprite groups
+    my_player_group.update()
+    my_player_group.draw(display_surface)
+    
+    my_monster_group.update()
+    my_monster_group.draw(display_surface)
+    
+    # Update and draw the Game
+    my_game.update()
+    my_game.draw()
+     
             
     # Update display and tick the clock
     pygame.display.update()
