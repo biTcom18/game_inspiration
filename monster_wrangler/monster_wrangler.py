@@ -85,21 +85,46 @@ class Player(pygame.sprite.Sprite):
       
     def warp(self):
         """ Warp the player to the bottom 'safe zone' """
-        pass
+        if self.warps > 0:
+            self.warps -= 1
+            self.warp_sound.play()
+            self.rect.bottom  = WINDOW_HEIGHT
     
     def reset(self):
         """ Resets the players position """
-        pass
+        self.rect.centerx = WINDOW_WIDTH//2
+        self.rect.bottom = WINDOW_HEIGHT
     
     
 class Monster(pygame.sprite.Sprite):
     """ A class to create enemy monster objects """
-    def __init__(self):
+    def __init__(self, x, y, image, monster_type):
         """ Initialize the monster """
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        
+        # Monster type is an int 0 -> blue, 1 -> green, 2 -> purple, 3 -> yellow
+        self.type = monster_type
+        
+        # Set random motion
+        self.dx = random.choice([-1, 1])
+        self.dy = random.choice([-1, 1])
+        self.velocity = random.randint(1, 5)
+        
         
     def update(self):
         """ Update the monster """
-        pass
+        self.rect.x += self.dx*self.velocity
+        self.rect.y += self.dy*self.velocity
+        
+        # Bounce the monster off the edges of the sisplay
+        if self.rect.left <= 0 or self.rect.right >= WINDOW_WIDTH:
+            self.dx = -1*self.dx
+        if self.rect.top <= 0 or self.rect.bottom >= WINDOW_HEIGHT:
+            self.dy = -1*self.dy
+            
     
 
 # Create a player group and Player object
@@ -107,9 +132,14 @@ my_player_group = pygame.sprite.Group()
 my_player = Player()
 my_player_group.add(my_player)
 
-
 # Create a monster group
 my_monster_group = pygame.sprite.Group()
+
+# Test monster
+monster = Monster(500, 500, pygame.image.load("green_monster.png"), 1)
+my_monster_group.add(monster)
+monster = Monster(100, 500, pygame.image.load("blue_monster.png"), 0)
+my_monster_group.add(monster)
 
 # Create a game object
 my_game = Game()
