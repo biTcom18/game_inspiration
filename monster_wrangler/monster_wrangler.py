@@ -19,15 +19,69 @@ class Game():
     """ A class to control gameplay """
     def __init__(self):
         """ Initialize the game object """
-        pass
-    
+        # Set game values
+        self.score = 0
+        self.round_number = 0
+        
+        self.round_tyme = 0
+        
+        self.player = player         
+        self.monster_group = monster_group
+        
+        # Set sound and music
+        self.next_level_sound = pygame.mixer.Sound("next_level.wav")
+        
+        # Set font
+        self.font = pygame.font.Font("Abrushow.ttf", 24)
+        
+        # Set images
+        blue_image = pygame.image.load("blue_monster.png")
+        green_image = pygame.image.load("green_monster.png")
+        purple_image = pygame.image.load("purple_monster.png")
+        yellow_image = pygame.image.load("yellow_monster.png")
+        # This list corresponds to the monster type attribute int 0 -> blue, 1 -> green, 2 -> purple, 3 -> yellow
+        self.target_monster_images = [blue_image, green_image, purple_image, yellow_image]
+
+        self.target_monster_type = random.randint(0, 3)
+        self.target_monster_image = self.target_monster_images[self.target_monster_type]
+        
+        self.target_monster_rect = self.target_monster_image.get_rect()
+        self.target_monster_rect.centerx = WINDOW_WIDTH//2
+        self.target_monster_rect.top = 30
+        
     def update(self):
         """ Update our game object """
-        pass
+        self,round_time += 1
+        
+        # Check for collisions
+        self.check_collisions()
     
     def draw(self):
         """ Draw the HUD and other to display """
-        pass
+        # Set colors
+        WHITE = (255, 255, 255)
+        BLUE = (20, 176, 235)
+        GREEN = (87, 201, 47)
+        PURPLE = (226, 73, 243)
+        YELLOW = (243, 157, 20)
+        
+        # Add the monster colors to a list where the index of the color matches target_monster_images
+        colors = [BLUE, GREEN, PURPLE, YELLOW]
+        
+        # Set text
+        catch_text = self.font.render("Current Catch", True, WHITE)
+        catch_rect = catch_text.get_rect()
+        catch_rect.centerx = WINDOW_WIDTH//2
+        catch_rect.top = 5
+        
+        score_text = self.font.render("Score: " + str(self.score), True, WHITE)
+        score_rect = score_text.get_rect()
+        score_rect.topleft = (5,5)
+        
+        lives_text = self.font.render("Lives: " + str(self.player.lives), True, WHITE)
+        lives_rect = lives_text.get_rect()
+        lives_rect.topleft = (5, 35)
+
     
     def check_collisions():
         """ Check for collisions between player and monsters """
@@ -47,8 +101,7 @@ class Game():
     def reset_game(self):
         """ Reset the game """
         pass
-    
-    
+
     
 class Player(pygame.sprite.Sprite):
     """ A player class that the user can control """
