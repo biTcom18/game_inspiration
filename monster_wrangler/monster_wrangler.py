@@ -17,15 +17,16 @@ clock = pygame.time.Clock()
 # Define classes
 class Game():
     """ A class to control gameplay """
-    def __init__(self):
+    def __init__(self, player, monster_group):
         """ Initialize the game object """
         # Set game values
         self.score = 0
         self.round_number = 0
         
-        self.round_tyme = 0
+        self.round_time = 0
+        self.frame_count = 0
         
-        self.player = player         
+        self.player = player        
         self.monster_group = monster_group
         
         # Set sound and music
@@ -51,10 +52,13 @@ class Game():
         
     def update(self):
         """ Update our game object """
-        self,round_time += 1
+        self.frame_count += 1
+        if self.frame_count == FPS:
+            self.round_time += 1
+            self.frame_count = 0
         
         # Check for collisions
-        self.check_collisions()
+        #self.check_collisions()
     
     def draw(self):
         """ Draw the HUD and other to display """
@@ -81,7 +85,30 @@ class Game():
         lives_text = self.font.render("Lives: " + str(self.player.lives), True, WHITE)
         lives_rect = lives_text.get_rect()
         lives_rect.topleft = (5, 35)
-
+        
+        round_text = self.font.render("Current Round: " + str(self.round_number), True, WHITE)
+        round_rect = round_text.get_rect()
+        round_rect.topleft = (5, 65)
+        
+        time_text = self.font.render("Round Time: " + str(self.round_time), True, WHITE)
+        time_rect = time_text.get_rect()
+        time_rect.topright = (WINDOW_WIDTH - 10, 5)
+        
+        warp_text = self.font.render("Warps: " + str(self.player.warps), True, WHITE)
+        warp_rect = warp_text.get_rect()
+        warp_rect.topright = (WINDOW_WIDTH - 10, 35)
+        
+        # Blit the HUD
+        display_surface.blit(catch_text, catch_rect)        
+        display_surface.blit(score_text, score_rect)
+        display_surface.blit(round_text, round_rect)
+        display_surface.blit(lives_text, lives_rect)
+        display_surface.blit(time_text, time_rect)
+        display_surface.blit(warp_text, warp_rect)
+        display_surface.blit(self.target_monster_image, self.target_monster_rect)
+        
+        pygame.draw.rect(display_surface, colors[self.target_monster_type], (WINDOW_WIDTH//2 - 32, 30, 64, 64), 2)
+        pygame.draw.rect(display_surface, colors[self.target_monster_type], (0, 100, WINDOW_WIDTH, WINDOW_HEIGHT - 200), 4)
     
     def check_collisions():
         """ Check for collisions between player and monsters """
@@ -195,7 +222,7 @@ monster = Monster(100, 500, pygame.image.load("blue_monster.png"), 0)
 my_monster_group.add(monster)
 
 # Create a game object
-my_game = Game()
+my_game = Game(my_player, my_monster_group)
 
 # The main game loop
 running = True
