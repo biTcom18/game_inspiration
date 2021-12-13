@@ -180,6 +180,8 @@ class Game():
     
     def pause_game(self, main_text, sub_text):
         """ Pause the game """
+        global running
+        
         # Set color
         WHITE = (255, 255, 255)
         BLACK = (0, 0, 0)
