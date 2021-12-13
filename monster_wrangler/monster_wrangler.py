@@ -215,7 +215,14 @@ class Game():
             
     def reset_game(self):
         """ Reset the game """
-        pass
+        self.score = 0
+        self.round_number = 0
+        
+        self.player.lives = 5
+        self.player.warps = 2
+        self.player.reset()
+        
+        self.start_new_round()
 
     
 class Player(pygame.sprite.Sprite):
@@ -245,9 +252,9 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= self.velocity
         if keys[pygame.K_RIGHT] and self.rect.right < WINDOW_WIDTH:
             self.rect.x += self.velocity
-        if keys[pygame.K_UP] and self.rect.top > 0:
+        if keys[pygame.K_UP] and self.rect.top > 100:
             self.rect.y -= self.velocity
-        if keys[pygame.K_DOWN] and self.rect.bottom < WINDOW_HEIGHT:
+        if keys[pygame.K_DOWN] and self.rect.bottom < WINDOW_HEIGHT - 100:
             self.rect.y += self.velocity
     
       
@@ -290,7 +297,7 @@ class Monster(pygame.sprite.Sprite):
         # Bounce the monster off the edges of the sisplay
         if self.rect.left <= 0 or self.rect.right >= WINDOW_WIDTH:
             self.dx = -1*self.dx
-        if self.rect.top <= 0 or self.rect.bottom >= WINDOW_HEIGHT:
+        if self.rect.top <= 100 or self.rect.bottom >= WINDOW_HEIGHT - 100:
             self.dy = -1*self.dy
             
     
@@ -306,6 +313,7 @@ my_monster_group = pygame.sprite.Group()
 
 # Create a game object
 my_game = Game(my_player, my_monster_group)
+my_game.pause_game("Monster Wrangler", "Press 'Enter' to begin")
 my_game.start_new_round()
 
 # The main game loop
@@ -315,6 +323,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # Player wants to warp
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                my_player.warp()
             
             
     # Fill the display
