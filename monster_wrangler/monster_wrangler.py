@@ -110,7 +110,7 @@ class Game():
         pygame.draw.rect(display_surface, colors[self.target_monster_type], (WINDOW_WIDTH//2 - 32, 30, 64, 64), 2)
         pygame.draw.rect(display_surface, colors[self.target_monster_type], (0, 100, WINDOW_WIDTH, WINDOW_HEIGHT - 200), 4)
     
-    def check_collisions():
+    def check_collisions(self):
         """ Check for collisions between player and monsters """
         # Check for collision between a player and a individual monster
         # We must test the type of the monster to see if it matches the type of our target monster
