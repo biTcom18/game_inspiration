@@ -16,7 +16,7 @@ clock = pygame.time.Clock()
 
 # Define classes
 class Game():
-""" A class to help control and update gameplay """
+    """ A class to help control and update gameplay """
     def __init__(self):
         pass
     
@@ -57,20 +57,42 @@ class Game():
     
 class Player(pygame.sprite.Sprite):
     """ A class to model a spaceship the user can control """
-    def __init__(self):
+    def __init__(self, bullet_group):
         """ Initialize the player """
-        pass
+        super().__init__()
+        self.image = pygame.image.load("player_ship.png")
+        self.rect = self.image.get_rect()
+        self.rect.centerx = WINDOW_WIDTH//2
+        self.rect.bottom = WINDOW_HEIGHT
+        
+        self.lives = 5
+        self.velocity = 8
+        
+        self.bullet_group = bullet_group
+        self.shoot_sound = pygame.mixer.Sound("player_fire.wav")
     
     def update(self):
         """ Update the player """
-        pass
+        keys = pygame.key.get_pressed()
+        
+        # Move the player withing the bounds of the screen
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self. velocity
+            
+        if keys[pygame.K_RIGHT] and self.rect.right < WINDOW_WIDTH:
+            self.rect.x += self.velocity
+            
     
     def fire(self):
         """ Fire a bullet """
+        # Restrict the nimber of bullets on screen at a time
+        if len(self.bullet_group) < 2:
+            self.shoot_sound.play()
+            PlayerBullet(self.rect.centerx, self.rect.top, self.bullet_group)
         
     def reset(self):
         """ Reset the players position """
-        pass 
+        self.rect.centerx = WINDOW_WIDTH//2
     
     
 class Alien(pygame.sprite.Sprite):
@@ -89,16 +111,99 @@ class Alien(pygame.sprite.Sprite):
     def reset(self):
         """ Reset the alien position """
         pass 
+    
+
+class PlayerBullet(pygame.sprite.Sprite):
+    """ A class to modek a bullet fired by the player """
+    def __init__(self, x, y, bullet_group):
+        """ Initialize the bullet """
+        super().__init__()
+        self.image = pygame.image.load("green_laser.png")
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x
+        self.rect.centery = y
+        
+        self.velocity = 10
+        bullet_group.add(self)
+    
+    def update(self):
+        """ Update the bullet """
+        self.rect.y -= self.velocity
+        
+        # If the bullet is off the screen, kill it
+        if self.rect.bottom < 0:
+            self.kill()
+             
         
         
         
+        
+    
+class AlienBullet(pygame.sprite.Sprite):
+    """ A class to modek a bullet fired by the aliens """
+    def __init__(self, x, y, bullet_group):
+        """ Initialize the bullet """
+        super().__init__()
+        self.image = pygame.image.load("red_laser.png")
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x
+        self.rect.centery = y
+        
+        self.velocity = 10
+        bullet_group.add(self)
+    
+    def update(self):
+        """ Update the bullet """
+        self.rect.y += self.velocity
+        
+# Create bullet groups
+my_player_bullet_group = pygame.sprite.Group()
+my_alien_bullet_group = pygame.sprite.Group()
+
+# Create a player group and Player object
+my_player_group = pygame.sprite.Group()
+my_player = Player(my_player_bullet_group)
+my_player_group.add(my_player)
+
+# Create an alien group. Will add Alien objects via the game's start new round method
+my_alien_group = pygame.sprite.Group()
+
+# Create a Game object
+my_game = Game()
+
+         
         
 # The main loop
 running = True
 while running:
+    # Check to see if the user wants to quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # The player wants to fire
+        if event.type == pygame.KEYDOWN:
+            my_player.fire()
+        
+
+    # Fill the display
+    display_surface.fill((0, 0, 0))
+    
+    # Update and display all sprite groups
+    my_player_group.update()
+    my_player_group.draw(display_surface)
+    
+    my_alien_group.update()
+    my_alien_group.draw(display_surface)
+    
+    my_player_bullet_group.update()
+    my_player_bullet_group.draw(display_surface)
+    
+    my_alien_bullet_group.update()
+    my_alien_bullet_group.draw(display_surface)
+    
+    # Update and draw Game object
+    my_game.update()
+    my_game.draw()
             
     # Update the display and tick
     pygame.display.update()
