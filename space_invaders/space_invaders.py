@@ -69,12 +69,35 @@ class Game():
         pygame.draw.line(display_surface, WHITE, (0, 50),(WINDOW_WIDTH, 50), 4)
         pygame.draw.line(display_surface, WHITE, (0,WINDOW_HEIGHT - 100), (WINDOW_WIDTH, WINDOW_HEIGHT-100), 4)
 
-
-
-
     def shift_aliens(self):
         """ Shift a wave of aliens down the screen and revers direction """
-        
+        # Determine if alieh group has hit an edge
+        shift = False
+        for alien in (self.alien_group.sprites()):
+            if alien.rect.left <= 0 or alien.rect.right >= WINDOW_WIDTH:
+                shift = True
+
+        # Shift every alien downm change directionm and check a breach
+        if shift:
+            breach = False
+            for alien in (self.alien_group.sprites()):
+                # Shift down
+                alien.rect.y += 10*self.round_number
+
+                # Reverse the direction and move the alien off the edge so 'shift' doesn't trigger
+                alien.direction = -1*alien.direction
+                alien.rect.x += alien.direction*alien.velocity
+
+                # Check if an alien reached the ship
+                if alien.rect.bottom >= WINDOW_HEIGHT - 100:
+                    breach = True
+
+            # Aliens breached the line
+            if breach:
+                self.breach_sound.play()
+                self.player.lives -= 1
+                self.check_game_status()
+
     def check_collisions(self):
         """ Check for collisions between player bullet group and alien group """
         pass
@@ -82,7 +105,14 @@ class Game():
     def check_round_completion(self):
         """ Check to see if a player has completed a single round """
         pass
-    
+
+
+
+
+
+
+
+
     def start_new_round(self):
         """ Start a new round """
         # Create a grid of Aliens 11 columns and 5 rows
@@ -187,7 +217,7 @@ class Alien(pygame.sprite.Sprite):
     
 
 class PlayerBullet(pygame.sprite.Sprite):
-    """ A class to modek a bullet fired by the player """
+    """ A class to create a bullet fired by the player """
     def __init__(self, x, y, bullet_group):
         """ Initialize the bullet """
         super().__init__()
@@ -210,7 +240,7 @@ class PlayerBullet(pygame.sprite.Sprite):
         
     
 class AlienBullet(pygame.sprite.Sprite):
-    """ A class to modek a bullet fired by the aliens """
+    """ A class to show a bullet fired by the aliens """
     def __init__(self, x, y, bullet_group):
         """ Initialize the bullet """
         super().__init__()
