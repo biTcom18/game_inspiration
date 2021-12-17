@@ -126,10 +126,12 @@ class Alien(pygame.sprite.Sprite):
     
     def fire(self):
         """ Fire a bullet """
+        AlienBullet(self.rect.centerx, self.rect.bottom, self.bullet_group)
         
     def reset(self):
         """ Reset the alien position """
-        pass 
+        self.rect.topleft = (self.starting_x, self.starting_y)
+        self.direction = 1
     
 
 class PlayerBullet(pygame.sprite.Sprite):
@@ -154,9 +156,6 @@ class PlayerBullet(pygame.sprite.Sprite):
             self.kill()
              
         
-        
-        
-        
     
 class AlienBullet(pygame.sprite.Sprite):
     """ A class to modek a bullet fired by the aliens """
@@ -175,6 +174,10 @@ class AlienBullet(pygame.sprite.Sprite):
         """ Update the bullet """
         self.rect.y += self.velocity
         
+        # If bullet is off the screen, kill it
+        if self.rect.top > WINDOW_HEIGHT:
+            self.kill()
+        
 # Create bullet groups
 my_player_bullet_group = pygame.sprite.Group()
 my_alien_bullet_group = pygame.sprite.Group()
@@ -186,6 +189,13 @@ my_player_group.add(my_player)
 
 # Create an alien group. Will add Alien objects via the game's start new round method
 my_alien_group = pygame.sprite.Group()
+
+    
+# Test aliens ... will delete later
+for i in range(10):
+    alien = Alien(64 + i * 64, 100,3,my_alien_bullet_group)
+    my_alien_group.add(alien)
+
 
 # Create a Game object
 my_game = Game()
