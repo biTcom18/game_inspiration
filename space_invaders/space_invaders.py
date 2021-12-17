@@ -17,8 +17,24 @@ clock = pygame.time.Clock()
 # Define classes
 class Game():
     """ A class to help control and update gameplay """
-    def __init__(self):
-        pass
+    def __init__(self, player, alien_group, player_bullet_group, alien_bullet_group):
+        # Set game values
+        self.round_number = 1
+        self.score = 0
+
+        self.player = player
+        self.alien_group = alien_group
+        self.player_bullet_group = player_bullet_group
+        self.alien_bullet_group = alien_bullet_group
+
+        # Set sounds and music
+        self.new_round_sound = pygame.mixer.Sound("new_round.wav")
+        self.breach_sound = pygame.mixer.Sound("breach.wav")
+        self.alien_hit_sound = pygame.mixer.Sound("alien_hit.wav")
+        self.player_hit_sound = pygame.mixer.Sound("player_hit.wav")
+
+        # Set font
+        self.font = pygame.font.Font("Facon.ttf", 32)
     
     def update(self):
         """ Update the game """
@@ -198,10 +214,8 @@ for i in range(10):
 
 
 # Create a Game object
-my_game = Game()
+my_game = Game(my_player,my_alien_group, my_player_bullet_group,my_alien_bullet_group )
 
-         
-        
 # The main loop
 running = True
 while running:
