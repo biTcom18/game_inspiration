@@ -11,7 +11,7 @@ display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Space Invaders")
 
 # Set FPS and clock
-FPS = 60
+FPS = 30
 clock = pygame.time.Clock()
 
 # Define classes
@@ -38,11 +38,39 @@ class Game():
     
     def update(self):
         """ Update the game """
-        pass
+        self.shift_aliens()
+        self.check_collisions()
+        self.check_round_completion()
     
     def draw(self):
         """ Draw the hud and other information to display """
-        pass 
+        # Set colors
+        WHITE = (255,255,255,255)
+
+        # Set text
+        score_text = self.font.render("Score: " + str(self.score), True, WHITE)
+        score_rect = score_text.get_rect()
+        score_rect.centerx = WINDOW_WIDTH//2
+        score_rect.top = 10
+
+        round_text = self.font.render("Round: " + str(self.round_number), True, WHITE)
+        round_rect = round_text.get_rect()
+        round_rect.topleft = (20, 10)
+
+        lives_text = self.font.render("Lives: " + str(self.player.lives), True, WHITE)
+        lives_rect = lives_text.get_rect()
+        lives_rect.topright = (WINDOW_WIDTH - 20, 10)
+
+        # Blit the HUD to the display
+        display_surface.blit(score_text, score_rect)
+        display_surface.blit(round_text, round_rect)
+        display_surface.blit(lives_text, lives_rect)
+
+        pygame.draw.line(display_surface, WHITE, (0, 50),(WINDOW_WIDTH, 50), 4)
+        pygame.draw.line(display_surface, WHITE, (0,WINDOW_HEIGHT - 100), (WINDOW_WIDTH, WINDOW_HEIGHT-100), 4)
+
+
+
 
     def shift_aliens(self):
         """ Shift a wave of aliens down the screen and revers direction """
@@ -57,7 +85,15 @@ class Game():
     
     def start_new_round(self):
         """ Start a new round """
-        pass
+        # Create a grid of Aliens 11 columns and 5 rows
+        for i in range(11):
+            for j in range(5):
+                alien = Alien(64 + i*64, 64 + j*64, self.round_number, self.alien_bullet_group)
+                self.alien_group.add(alien)
+
+        # Pause the game and prompt user to start
+        self.new_round_sound.play()
+        self.pause_game()
         
     def check_game_status(self):        
         """ Check to see the status of the game and how the player died """
@@ -206,15 +242,11 @@ my_player_group.add(my_player)
 # Create an alien group. Will add Alien objects via the game's start new round method
 my_alien_group = pygame.sprite.Group()
 
-    
-# Test aliens ... will delete later
-for i in range(10):
-    alien = Alien(64 + i * 64, 100,3,my_alien_bullet_group)
-    my_alien_group.add(alien)
 
 
 # Create a Game object
 my_game = Game(my_player,my_alien_group, my_player_bullet_group,my_alien_bullet_group )
+my_game.start_new_round()
 
 # The main loop
 running = True
