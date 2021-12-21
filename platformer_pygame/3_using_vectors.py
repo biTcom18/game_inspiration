@@ -54,9 +54,30 @@ class Player(pygame.sprite.Sprite):
         self.velocity = vector(0, 0)
         self.acceleration = vector(0, 0)
         
+        # Kinematic constants
+        self.HORIZONTAL_ACCELERATION = 2
+        self.HORIZONTAL_FRICTION = 0.15
+        
+        
         
     def update(self):
-        pass
+        # Set the acceleration vector to (0,0) so there is initially no acceleration
+        # If there is no force (no key presses) acting on the player then acceleration should be 0
+        self.acceleration = vector(0,0)
+        # If the user is pressing a key, set the x-component of the acceleration vector to a non zero value.
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.acceleration.x = -1 * self.HORIZONTAL_ACCELERATION 
+        if keys[pygame.K_RIGHT]:
+            self.acceleration.x = self.HORIZONTAL_ACCELERATION
+            
+        # Calculate new kinematics values
+        self.acceleration.x -= self.velocity.x * self.HORIZONTAL_FRICTION
+        self.velocity += self.acceleration
+        self.position += self.velocity + 0.5*self.acceleration
+        
+        # Update new rect based on kinematic calculation
+        self.rect.bottomleft = self.position 
         
 
 # Create sprite groups
