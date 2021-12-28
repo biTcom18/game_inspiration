@@ -10,7 +10,7 @@ display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Discrete Movement")
 
 # Set game values
-VELOCITY = 30
+VELOCITY = 1
 
 # Load images
 dragon_image = pygame.image.load("dragon_left.png")
