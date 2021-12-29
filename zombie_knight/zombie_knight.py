@@ -7,7 +7,6 @@ vector = pygame.math.Vector2
 pygame.init()
 
 # Set display surface (tile size is 32x32 so 1280/32 = 40 tiles wide, 736/32 = 23 tiles height)
-
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 736
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -65,10 +64,34 @@ class Game():
 class Tile(pygame.sprite.Sprite):
     """ A class to represent 32x32 pixel area in our display """
     
-    def __init__(self):
+    def __init__(self, x, y, image_int, main_group, sub_group = ""):
         """ Initialize the tile """    
-        pass
-    
+        super().__init__()
+        # Load in the correct image and add it to the correct sub group
+        # Dirt tiles
+        if image_int == 1:
+            self.image = pygame.transform.scale(pygame.image.load("zombie_knight/images/tiles/Tile_1.png"), (32,32))
+        # Platform tiles
+        elif image_int == 2:
+            self.image = pygame.transform.scale(pygame.image.load("zombie_knight/images/tiles/Tile_2.png"), (32,32))
+            sub_group.add(self)
+        elif image_int == 3:
+            self.image = pygame.transform.scale(pygame.image.load("zombie_knight/images/tiles/Tile_3.png"), (32,32))
+            sub_group.add(self)
+        elif image_int == 4:
+            self.image = pygame.transform.scale(pygame.image.load("zombie_knight/images/tiles/Tile_4.png"), (32,32))
+            sub_group.add(self)
+        elif image_int == 5:
+            self.image = pygame.transform.scale(pygame.image.load("zombie_knight/images/tiles/Tile_5.png"), (32,32))
+            sub_group.add(self)
+                                
+        # Add every tile to the main group
+        main_group.add(self)
+        
+        # Get the rect of the image and position within the grid
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)                                
+            
     
 class Player(pygame.sprite.Sprite):
     """ A class the user can control """
@@ -154,17 +177,44 @@ class Zombie(pygame.sprite.Sprite):
 class RubyMaker(pygame.sprite.Sprite):
     """ A title that is animated.A ruby will be generated here """
     
-    def __init__(self):
+    def __init__(self, x, y, main_group):
         """ Initialize the ruby maker """
-        pass
-    
+        super().__init__()
+        
+        # Animation frames
+        self.ruby_sprites = []
+        
+        # Rotating
+        self.ruby_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/ruby/tile000.png"), (64, 64)))
+        self.ruby_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/ruby/tile001.png"), (64, 64)))
+        self.ruby_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/ruby/tile002.png"), (64, 64)))
+        self.ruby_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/ruby/tile003.png"), (64, 64)))
+        self.ruby_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/ruby/tile004.png"), (64, 64)))
+        self.ruby_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/ruby/tile005.png"), (64, 64)))
+        self.ruby_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/ruby/tile006.png"), (64, 64)))
+
+        # Load image and get rect
+        self.current_sprite = 0
+        self.image = self.ruby_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = (x, y)
+        
+        # Add to the main group for drawing purposes
+        main_group.add(self)
+        
+        
     def update(self):
         """ Update the ruby maker """
-        pass
+        self.animate(self.ruby_sprites, .25)
 
-    def animate(self):
+    def animate(self, sprite_list, speed):
         """ Animate the ruby maker """
-        pass
+        if self.current_sprite < len(sprite_list) - 1:
+            self.current_sprite += speed
+        else:
+            self.current_sprite = 0
+            
+        self.image = sprite_list[int(self.current_sprite)]
     
     
 class Ruby(pygame.sprite.Sprite):
@@ -223,7 +273,7 @@ tile_map = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,0,0,0,0,0,0,0,0,0,0,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+    [4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,0,0,0,0,6,0,0,0,0,0,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -245,6 +295,37 @@ tile_map = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ] 
 
+# Generate Tile objects from the tile map
+# Loop through the 23 lists (raws) in the tile map (i moves us down the map)
+for i in range(len(tile_map)):
+    # Loop through the 40 elements in a given list (cols) (j moves us across the map)
+    for j in range(len(tile_map[i])):
+        # Dirt tile
+        if tile_map[i][j] == 1:
+            Tile(j*32, i*32, 1, my_main_tile_group)
+        # Platform tiles
+        elif tile_map[i][j] == 2:
+            Tile(j*32, i*32, 2, my_main_tile_group, my_platform_group)
+        elif tile_map[i][j] == 3:
+            Tile(j*32, i*32, 3, my_main_tile_group, my_platform_group)
+        elif tile_map[i][j] == 4:
+            Tile(j*32, i*32, 4, my_main_tile_group, my_platform_group)
+        elif tile_map[i][j] == 5:
+            Tile(j*32, i*32, 5, my_main_tile_group, my_platform_group)
+        # Ruby Maker
+        elif tile_map[i][j] == 6:
+            RubyMaker(j*32, i*32, my_main_tile_group)
+        # Portals
+        elif tile_map[i][j] == 7:
+            pass
+        elif tile_map[i][j] == 8:
+            pass
+        # Player 
+        elif tile_map[i][j] == 9:
+            pass
+
+
+
 # Load a background image (we must resize)
 background_image = pygame.transform.scale(pygame.image.load("zombie_knight/images/background.png"), (1280, 736))
 background_rect = background_image.get_rect()
@@ -260,6 +341,10 @@ while running:
             
     # Blit the background
     display_surface.blit(background_image, background_rect)
+    
+    # Draw tiles and update ruby maker
+    my_main_tile_group.update()
+    my_main_tile_group.draw(display_surface)
     
     # Update the display and tick the clock
     pygame.display.update()
