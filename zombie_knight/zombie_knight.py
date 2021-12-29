@@ -244,17 +244,91 @@ class Ruby(pygame.sprite.Sprite):
 class Portal(pygame.sprite.Sprite):
     """ A class that if collided with will transport you """
     
-    def __init__(self):
+    def __init__(self, x, y, color, portal_group):
         """ Initialize the portal """
-        pass
-    
+        super().__init__()
+        
+        # Animation frames
+        self.portal_sprites = []
+        
+        # Portal animation
+        if color == "green":
+            # Green portal
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile001.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile002.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile003.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile004.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile005.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile006.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile007.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile008.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile009.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile010.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile011.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile012.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile013.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile014.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile015.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile016.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile017.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile018.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile019.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile020.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile021.png"), (72, 72)))
+        else:
+            # Purple portal
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile001.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile002.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile003.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile004.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile005.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile006.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile007.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile008.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile009.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile010.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile011.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile012.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile013.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile014.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile015.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile016.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile017.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile018.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile019.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile020.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile021.png"), (72, 72)))
+
+        # Load an image and get a rect
+        self.current_sprite = random.randint(0, len(self.portal_sprites) - 1)
+        self.image = self.portal_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = (x, y)            
+        
+        # Add to the portal group
+        portal_group.add(self)
+
     def update(self):
         """ Update the portal """
-        pass
+        self.animate(self.portal_sprites, .2)
     
-    def animate(self):
+    def animate(self, sprite_list, speed):
         """ Animate the portal """
-        pass
+        if self.current_sprite < len(sprite_list) - 1:
+            self.current_sprite += speed
+        else:
+            self.current_sprite = 0
+            
+        self.image = sprite_list[int(self.current_sprite)]
 
 
 # Create sprite groups
@@ -272,7 +346,7 @@ my_ruby_group = pygame.sprite.Group()
 tile_map = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0],
     [4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,0,0,0,0,6,0,0,0,0,0,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -290,7 +364,7 @@ tile_map = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0],
     [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ] 
@@ -317,9 +391,9 @@ for i in range(len(tile_map)):
             RubyMaker(j*32, i*32, my_main_tile_group)
         # Portals
         elif tile_map[i][j] == 7:
-            pass
+            Portal(j*32, i*32, "green", my_portal_group)
         elif tile_map[i][j] == 8:
-            pass
+            Portal(j*32, i*32, "purple", my_portal_group)
         # Player 
         elif tile_map[i][j] == 9:
             pass
@@ -345,6 +419,10 @@ while running:
     # Draw tiles and update ruby maker
     my_main_tile_group.update()
     my_main_tile_group.draw(display_surface)
+    
+    # Update and draw sprite groups
+    my_portal_group.update()
+    my_portal_group.draw(display_surface)
     
     # Update the display and tick the clock
     pygame.display.update()
