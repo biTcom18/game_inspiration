@@ -144,9 +144,9 @@ class Tile(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     """ A class the user can control """
     
-    def __ini__(self, x, y, platform_group, portal_group, bullet_group):
+    def __init__(self, x, y, platform_group, portal_group, bullet_group):
         """ Initialize the player """
-        super.__init__()
+        super().__init__()
         
         # Set constant variables
         self.HORISONTAL_ACCELERATION = 2
@@ -240,7 +240,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_sound = pygame.mixer.Sound("zombie_knight/sounds/jump_sound.wav")
         self.slash_sound = pygame.mixer.Sound("zombie_knight/sounds/slash_sound.wav")
         self.portal_sound = pygame.mixer.Sound("zombie_knight/sounds/portal_sound.wav")
-        self.hit_sound = pygame.mixer.Sound("zombie_knight/player_hit.wav")
+        self.hit_sound = pygame.mixer.Sound("zombie_knight/sounds/player_hit.wav")
         
         # Kinematics vectors
         self.position = vector(x, y)
@@ -250,23 +250,45 @@ class Player(pygame.sprite.Sprite):
         # Set initial player values
         self.health = self.STARTING_HEALTH
         self.starting_x = x
-        self.starting_y = y
+        self.starting_y = y    
     
             
-        
-        
     def update(self):
         """ Update the player """
-        pass
+        self.move()
+        self.check_collisions()
+        self.check_animations()
+    
     
     def move(self):
         """ Move the player """
-        pass
-    
+        # Set acceleration vector
+        self.acceleration = vector(0, self.VERTICAL_ACCELERATION)
+        
+        # If the user is pressind a key, set the x-component if the acceleration to be non-zero
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.acceleration.x = -1 * self.HORISONTAL_ACCELERATION
+        elif keys[pygame.K_RIGHT]:
+            self.acceleration.x = self.HORISONTAL_ACCELERATION
+            
+        # Calcilate new kinematics values: (4,1) + (2,8) = (6,9)
+        self.acceleration.x -= self.velocity.x * self.HORISONTAL_FRICTION
+        self.velocity += self.acceleration
+        self.position += self.velocity + 0.5 * self.acceleration
+        
+        # Update rect based on kinematic calculations and add wrap around movement
+        if self.position.x < 0:
+            self.position.x = WINDOW_WIDTH
+        elif self.position.x > WINDOW_WIDTH:
+            self.position.x = 0
+            
+        self.rect.bottomleft = self.position    
     
     def check_collisions(self):
         """ Check for collisions with platforms and portals """
         pass 
+
 
     def check_animations(self):
         """ Check to see if jump/fire animation shpuld run """
@@ -517,7 +539,7 @@ tile_map = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,0,0,0,0,0,0,0,0,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0],
     [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
@@ -551,7 +573,8 @@ for i in range(len(tile_map)):
             Portal(j*32, i*32, "purple", my_portal_group)
         # Player 
         elif tile_map[i][j] == 9:
-            pass
+            my_player = Player(j*32 - 32, i*32 + 32, my_platform_group, my_portal_group, my_bullet_group)
+            my_player_group.add(my_player)
 
 
 
@@ -581,6 +604,9 @@ while running:
     # Update and draw sprite groups
     my_portal_group.update()
     my_portal_group.draw(display_surface)
+    
+    my_player_group.update()
+    my_player_group.draw(display_surface)
     
     # Update and draw the game
     my_game.update()
