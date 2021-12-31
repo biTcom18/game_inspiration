@@ -269,8 +269,15 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.acceleration.x = -1 * self.HORISONTAL_ACCELERATION
+            self.animate(self.move_left_sprites, .5)
         elif keys[pygame.K_RIGHT]:
             self.acceleration.x = self.HORISONTAL_ACCELERATION
+            self.animate(self.move_right_sprites, .5)
+        else:
+            if self.velocity.x > 0:
+                self.animate(self.idle_right_sprites, .5)
+            else:
+                self.animate(self.idle_left_sprites, .5)
             
         # Calcilate new kinematics values: (4,1) + (2,8) = (6,9)
         self.acceleration.x -= self.velocity.x * self.HORISONTAL_FRICTION
@@ -300,7 +307,7 @@ class Player(pygame.sprite.Sprite):
             if collided_platforms:
                 self.velocity.y = 0
                 while pygame.sprite.spritecollide(self, self.platform_group, False):
-                    self.position += 1
+                    self.position.y += 1
                     self.rect.bottomleft = self.position
         
         # Collision check for portals
@@ -323,7 +330,21 @@ class Player(pygame.sprite.Sprite):
 
     def check_animations(self):
         """ Check to see if jump/fire animation shpuld run """
-        pass
+        # Animate the player jump
+        if self.animate_jump:
+            if self.velocity.x > 0:
+                self.animate(self.jump_right_sprites, .1)
+            else:
+                self.animate(self.jump_left_sprites, .1)
+        
+        # Animate the player attack
+        if self.animate_fire:
+            if self.velocity.x > 0:
+                self.animate(self.attack_right_sprites, .25)
+            else:
+                self.animate(self.attack_left_sprites, .25)
+        
+            
         
     def jump(self):
         """ Jump upwards if on a platform """
@@ -331,29 +352,66 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(self, self.platform_group, False):
             self.jump_sound.play()
             self.velocity.y = -1 * self.VERTICAL_JUMP_SPEED
-    
+            self.animate_jump = True
+            
     def fire(self):
         """ Fire a 'bullet' from a sword """
-        pass
+        self.slash_sound.play()
+        Bullet(self.rect.centerx, self.rect.centery, self.bullet_group, self)
+        self.animate_fire = True
 
     def reset(self):
         """ Reset the player's position """
-        pass
+        self.position = vector(self.starting_x, self.starting_y)
+        self.rect.bottomleft = self.position
 
-    def animate(self):
+    def animate(self, sprite_list, speed):
         """ Anemate the players actions """
-        pass
+        if self.current_sprite < len(sprite_list) - 1:
+            self.current_sprite += speed
+        else:
+            self.current_sprite = 0
+            # End the jump animation
+            if self.animate_jump:
+                self.animate_jump = False
+            # End the attack animation
+            if self.animate_fire:
+                self.animate_fire = False
+            
+        self.image = sprite_list[int(self.current_sprite)]
 
 class Bullet(pygame.sprite.Sprite):
     """ A projectile launched by the player """
     
-    def __init__(self):
+    def __init__(self, x, y, bullet_group, player):
         """ Initialize the bullet """
-        pass
+        super().__init__()
+        
+        # Set constant variables
+        self.VELOCITY = 20
+        self.RANGE = 500
+        
+        # Load image and get a rect
+        if player.velocity.x > 0:
+            self.image = pygame.transform.scale(pygame.image.load("zombie_knight/images/player/slash.png"), (32,32))
+        else:
+            self.image = pygame.transform.scale(pygame.transform.flip(pygame.image.load("zombie_knight/images/player/slash.png"), True, False), (32,32))
+            self.VELOCITY = -1*self.VELOCITY
+            
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        
+        self.starting_x = x
+        
+        bullet_group.add(self)
 
     def update(self):
         """ Update the bullet """
-        pass
+        self.rect.x += self.VELOCITY
+        
+        # If the bullet has passed the range, kill it
+        if abs(self.rect.x - self.starting_x) > self.RANGE:
+            self.kill()
 
 class Zombie(pygame.sprite.Sprite):
     """ An enemy class that moves across the screen """
@@ -628,9 +686,12 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            # Plsyer wants to jump
+            # Player wants to jump
             if event.key == pygame.K_SPACE:
                 my_player.jump()
+            # Player wants to fire
+            if event.key == pygame.K_UP:
+                my_player.fire()
             
     # Blit the background
     display_surface.blit(background_image, background_rect)
@@ -645,6 +706,9 @@ while running:
     
     my_player_group.update()
     my_player_group.draw(display_surface)
+    
+    my_bullet_group.update()
+    my_bullet_group.draw(display_surface)
     
     # Update and draw the game
     my_game.update()
