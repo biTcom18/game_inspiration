@@ -37,6 +37,11 @@ class Game():
         self.title_font = pygame.font.Font("zombie_knight/fonts/Poultrygeist.ttf", 48)
         self.HUD_font = pygame.font.Font("zombie_knight/fonts/Pixel.ttf", 24)
     
+        # Set sounds
+        self.lost_ruby_sound = pygame.mixer.Sound("zombie_knight/sounds/lost_ruby.wav")
+        self.ruby_pickup_sound = pygame.mixer.Sound("zombie_knight/sounds/ruby_pickup.wav")
+        pygame.mixer.music.load("zombie_knight/sounds/level_music.wav")
+    
         # Attach groups and sprites
         self.player = player
         self.zombie_group = zombie_group
@@ -136,6 +141,21 @@ class Game():
                     # Move the player to not continually take damage
                     self.player.position.x -= 256 * zombie.direction
                     self.player.rect.bottomleft = self.player.position
+        # See if a player collided with a ruby
+        if pygame.sprite.spritecollide(self.player, self.ruby_group, True):
+            self.ruby_pickup_sound.play()
+            self.score += 100
+            self.player.health += 10
+            if self.player.health > self.player.STARTING_HEALTH:
+                self.player.health = self.player.STARTING_HEALTH
+                
+        # See if a living zombie collided with a ruby
+        for zombie in self.zombie_group:
+            if zombie.is_dead == False:
+                if pygame.sprite.spritecollide(zombie, self.ruby_group, True):
+                    self.lost_ruby_sound.play()
+                    zombie = Zombie(self.platform_group, self.portal_group, self.round_number, 5 + self.round_number)
+                    self.zombie_group.add(zombie)
     
     def check_round_completion(self):
         """ Check if the player survived a single night """
@@ -912,7 +932,7 @@ class Portal(pygame.sprite.Sprite):
             self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile021.png"), (72, 72)))
 
         # Load an image and get a rect
-        self.current_sprite = random.randint(0, len(self.portal_sprites) - 1)
+        self.current_sprite = random.randint(0, len(self.portal_sprites)-1)
         self.image = self.portal_sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.bottomleft = (x, y)            
@@ -926,7 +946,7 @@ class Portal(pygame.sprite.Sprite):
     
     def animate(self, sprite_list, speed):
         """ Animate the portal """
-        if self.current_sprite < len(sprite_list) - 1:
+        if self.current_sprite < len(sprite_list)-1:
             self.current_sprite += speed
         else:
             self.current_sprite = 0
@@ -970,7 +990,7 @@ tile_map = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0],
+    [8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0],
     [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ] 
