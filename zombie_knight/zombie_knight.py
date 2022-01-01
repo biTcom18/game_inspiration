@@ -66,7 +66,7 @@ class Game():
         score_rect.topleft = (10, WINDOW_HEIGHT - 50)
         
         
-        health_text = self.HUD_font.render("Health: " + str(100), True, WHITE)
+        health_text = self.HUD_font.render("Health: " + str(self.player.health), True, WHITE)
         health_rect = health_text.get_rect()
         health_rect.topleft = (10, WINDOW_HEIGHT - 25)
         
@@ -105,6 +105,23 @@ class Game():
                     zombie.hit_sound.play()
                     zombie.is_dead = True
                     zombie.animate_death = True
+                    
+        # See if a player stompes zombie to finish it or collided with a live zombie to take damage
+        collision_list = pygame.sprite.spritecollide(self.player, self.zombie_group, False)
+        if collision_list:
+            for zombie in collision_list:
+                # The zombie is dead; stomp it
+                if zombie.is_dead == True:
+                    zombie.kick_sound.play()
+                    zombie.kill()
+                    self.score += 25
+                # The zombie isn't dead, so take damage
+                else:
+                    self.player.health -= 20
+                    self.player.hit_sound.play()
+                    # Move the player to not continually take damage
+                    self.player.position.x -= 256 * zombie.direction
+                    self.player.rect.bottomleft = self.player.position
     
     def check_round_completion(self):
         """ Check if the player survived a single night """
@@ -225,7 +242,7 @@ class Player(pygame.sprite.Sprite):
         for sprite in self.jump_right_sprites:
             self.jump_left_sprites.append(pygame.transform.flip(sprite, True, False))
         
-        # Jumping
+        # Attacking
         self.attack_right_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/player/attack/Attack (1).png"), (64,64))) 
         self.attack_right_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/player/attack/Attack (2).png"), (64,64)))
         self.attack_right_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/player/attack/Attack (3).png"), (64,64)))
@@ -579,6 +596,17 @@ class Zombie(pygame.sprite.Sprite):
         self.move()
         self.check_collisions()
         self.check_animations()
+        
+        # Determine when the zombie should rise from the dead
+        if self.is_dead:
+            self.frame_count += 1
+            if self.frame_count % FPS == 0:
+                self.round_time += 1
+                if self.round_time == self.RISE_TIME:
+                    self.animate_rise = True
+                    # When the zombie died, the image was kept as the last image
+                    # When it rises, we want to start at index 0 of our rise_sprite lists
+                    self.current_sprite = 0
     
     def move(self):
         """ Move the zombie """
@@ -590,7 +618,7 @@ class Zombie(pygame.sprite.Sprite):
             # We don't need to update the acceleration vector because it never changes here         
             # Calcilate new kinematics values: (4,1) + (2,8) = (6,9)
             self.velocity += self.acceleration
-            self.position += self.velocity + 0.5 * self.acceleration
+            self.position += self.velocity + 0.5*self.acceleration
             
             # Update rect based on kinematic calculations and add wrap around movement
             if self.position.x < 0:
@@ -628,9 +656,16 @@ class Zombie(pygame.sprite.Sprite):
             
             
     def check_animations(self):
-        """ Check to see if death/rise animation shpuld run """
+        """ Check to see if death/rise animation should run """
         # Animate the zombie death
         if self.animate_death:
+            if self.direction == 1:
+                self.animate(self.die_right_sprites, .095)
+            else:
+                self.animate(self.die_left_sprites, .095)
+        
+        # Animate the zombie rise
+        if self.animate_rise:
             if self.direction == 1:
                 self.animate(self.die_right_sprites, .095)
             else:
@@ -647,6 +682,12 @@ class Zombie(pygame.sprite.Sprite):
             if self.animate_death:
                 self.current_sprite = len(sprite_list) - 1
                 self.animate_death = False
+            # End the rise animation
+            if self.animate_rise:
+                self.animate_rise = False
+                self.is_dead = False
+                self.frame_count = 0
+                self.round_time = 0
               
         self.image = sprite_list[int(self.current_sprite)]
 
@@ -753,16 +794,9 @@ class Portal(pygame.sprite.Sprite):
             self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile018.png"), (72, 72)))
             self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile019.png"), (72, 72)))
             self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile020.png"), (72, 72)))
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile021.png"), (72, 72)))
+            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/green/tile021.png"), (72, 72)))       
         else:
             # Purple portal
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
-            self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
             self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile000.png"), (72, 72)))
             self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile001.png"), (72, 72)))
             self.portal_sprites.append(pygame.transform.scale(pygame.image.load("zombie_knight/images/portals/purple/tile002.png"), (72, 72)))
@@ -812,9 +846,12 @@ class Portal(pygame.sprite.Sprite):
 # Create sprite groups
 my_main_tile_group = pygame.sprite.Group() 
 my_platform_group = pygame.sprite.Group()
+
 my_player_group = pygame.sprite.Group()
 my_bullet_group = pygame.sprite.Group()
+
 my_zombie_group = pygame.sprite.Group()
+
 my_portal_group = pygame.sprite.Group()
 my_ruby_group = pygame.sprite.Group()
 
@@ -885,7 +922,7 @@ background_rect = background_image.get_rect()
 background_rect.topleft = (0, 0)
 
 # Create a game 
-my_game = Game(my_player, my_zombie_group, my_platform_group,my_portal_group, my_bullet_group, my_ruby_group)
+my_game = Game(my_player, my_zombie_group, my_platform_group, my_portal_group, my_bullet_group, my_ruby_group)
 
 # The main game loop
 running = True
