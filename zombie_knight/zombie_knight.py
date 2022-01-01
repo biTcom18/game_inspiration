@@ -20,7 +20,7 @@ clock = pygame.time.Clock()
 class Game():
     """ A class to help manage gameplay """
     
-    def __init__(self):
+    def __init__(self, player, zombie_group, platform_group, portal_group, bullet_group, ruby_group):
         """ Initialize the game """
         # Set constant variables
         self.STARTING_ROUND_TIME = 30
@@ -35,6 +35,14 @@ class Game():
         self.title_font = pygame.font.Font("zombie_knight/fonts/Poultrygeist.ttf", 48)
         self.HUD_font = pygame.font.Font("zombie_knight/fonts/Pixel.ttf", 24)
     
+        # Attach groups and sprites
+        self.player = player
+        self.zombie_group = zombie_group
+        self.platform_group = platform_group
+        self.portal_group = portal_group
+        self.bullet_group = bullet_group
+        self.ruby_group = ruby_group
+    
     def update(self):
         """ Update the game """ 
         # Update the round time every second
@@ -42,6 +50,9 @@ class Game():
         if self.frame_count % FPS == 0:
             self.round_time -= 1
             self.frame_count = 0
+            
+        # Check for gameplay collisions
+        self.check_collisions()
     
     def draw(self):
         """ Draw the game HUD """    
@@ -86,7 +97,14 @@ class Game():
     
     def check_collisions(self):
         """ Check collisions that affect gameplay """
-        pass
+        # See if any bullet in the bullet group hit a zombie in the zombie group
+        collision_dict = pygame.sprite.groupcollide(self.bullet_group, self.zombie_group, True, False)
+        if collision_dict:
+            for zombies in collision_dict.values():
+                for zombie in zombies:
+                    zombie.hit_sound.play()
+                    zombie.is_dead = True
+                    zombie.animate_death = True
     
     def check_round_completion(self):
         """ Check if the player survived a single night """
@@ -564,19 +582,24 @@ class Zombie(pygame.sprite.Sprite):
     
     def move(self):
         """ Move the zombie """
-        # We don't need to update the acceleration vector because it never changes here         
-        # Calcilate new kinematics values: (4,1) + (2,8) = (6,9)
-        self.velocity += self.acceleration
-        self.position += self.velocity + 0.5 * self.acceleration
-        
-        # Update rect based on kinematic calculations and add wrap around movement
-        if self.position.x < 0:
-            self.position.x = WINDOW_WIDTH
-        elif self.position.x > WINDOW_WIDTH:
-            self.position.x = 0
+        if not self.is_dead:
+            if self.direction == -1:
+                self.animate(self.walk_left_sprites, .5)
+            else:
+                self.animate(self.walk_right_sprites, .5)    
+            # We don't need to update the acceleration vector because it never changes here         
+            # Calcilate new kinematics values: (4,1) + (2,8) = (6,9)
+            self.velocity += self.acceleration
+            self.position += self.velocity + 0.5 * self.acceleration
             
-        self.rect.bottomleft = self.position    
-    
+            # Update rect based on kinematic calculations and add wrap around movement
+            if self.position.x < 0:
+                self.position.x = WINDOW_WIDTH
+            elif self.position.x > WINDOW_WIDTH:
+                self.position.x = 0
+                
+            self.rect.bottomleft = self.position    
+        
     
     def check_collisions(self):
         """ Check for collisions with platforms and portals """
@@ -606,12 +629,27 @@ class Zombie(pygame.sprite.Sprite):
             
     def check_animations(self):
         """ Check to see if death/rise animation shpuld run """
-        pass
+        # Animate the zombie death
+        if self.animate_death:
+            if self.direction == 1:
+                self.animate(self.die_right_sprites, .095)
+            else:
+                self.animate(self.die_left_sprites, .095)
     
 
-    def animate(self):
+    def animate(self, sprite_list, speed):
         """ Animate the zombie's actions """
-        pass
+        if self.current_sprite < len(sprite_list) - 1:
+            self.current_sprite += speed
+        else:
+            self.current_sprite = 0
+            # End the death animation
+            if self.animate_death:
+                self.current_sprite = len(sprite_list) - 1
+                self.animate_death = False
+              
+        self.image = sprite_list[int(self.current_sprite)]
+
     
     
 class RubyMaker(pygame.sprite.Sprite):
@@ -847,7 +885,7 @@ background_rect = background_image.get_rect()
 background_rect.topleft = (0, 0)
 
 # Create a game 
-my_game = Game()
+my_game = Game(my_player, my_zombie_group, my_platform_group,my_portal_group, my_bullet_group, my_ruby_group)
 
 # The main game loop
 running = True
@@ -887,6 +925,7 @@ while running:
     
     my_zombie_group.update()
     my_zombie_group.draw(display_surface)
+    
     
     # Update and draw the game
     my_game.update()
