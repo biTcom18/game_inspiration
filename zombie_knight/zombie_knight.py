@@ -66,6 +66,8 @@ class Game():
         
         # Check round complition
         self.check_round_completion()
+        
+        self.check_game_over()
     
     def draw(self):
         """ Draw the game HUD """    
@@ -167,7 +169,10 @@ class Game():
     
     def check_game_over(self):
         """ Check to see if the player lost the game """
-        pass
+        if self.player.health <= 0:
+            pygame.mixer.music.stop()
+            self.pause_game("Game Over! Final Score: " + str(self.score), "Press 'Enter' to play again...")
+            self.reset_game()
     
     def start_new_round(self):
         """ Start a new night """
@@ -234,7 +239,22 @@ class Game():
     
     def reset_game(self):
         """ Reset the game """
-        pass
+        # Reset game values
+        self.score = 0
+        self.round_number = 1
+        self.round_time = self.STARTING_ROUND_TIME
+        self.zombie_creation_time = self.STARTING_ZOMBIE_CREATION_TIME  
+        
+        # Reset the player
+        self.player.health = self.player.STARTING_HEALTH
+        self.player.reset()
+        
+        # Empty sprite groups
+        self.zombie_group.empty()
+        self.ruby_group.empty()
+        self.bullet_group.empty()
+        
+        pygame.mixer.music.play(-1, 0.0)
     
     
 class Tile(pygame.sprite.Sprite):
@@ -266,7 +286,10 @@ class Tile(pygame.sprite.Sprite):
         
         # Get the rect of the image and position within the grid
         self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)                                
+        self.rect.topleft = (x, y)      
+        
+        # Create a mask for better player collisions
+        self.mask = pygame.mask.from_surface(self.image)                          
             
     
 class Player(pygame.sprite.Sprite):
@@ -386,6 +409,10 @@ class Player(pygame.sprite.Sprite):
         self.move()
         self.check_collisions()
         self.check_animations()
+        
+        
+        # Update the players mask
+        self.mask = pygame.mask.from_surface(self.image)
     
     
     def move(self):
@@ -424,14 +451,14 @@ class Player(pygame.sprite.Sprite):
         """ Check for collisions with platforms and portals """
         # Collision check between player and platforms when falling
         if self.velocity.y > 0:
-            collided_platforms = pygame.sprite.spritecollide(self, self.platform_group, False)
+            collided_platforms = pygame.sprite.spritecollide(self, self.platform_group, False, pygame.sprite.collide_mask)
             if collided_platforms:
-                self.position.y = collided_platforms[0].rect.top + 1
+                self.position.y = collided_platforms[0].rect.top + 5
                 self.velocity.y = 0
                 
         # Collision check between player and platform if jumping up
         if self.velocity.y < 0:
-            collided_platforms = pygame.sprite.spritecollide(self, self.platform_group, False)
+            collided_platforms = pygame.sprite.spritecollide(self, self.platform_group, False, pygame.sprite.collide_mask)
             if collided_platforms:
                 self.velocity.y = 0
                 while pygame.sprite.spritecollide(self, self.platform_group, False):
@@ -490,6 +517,7 @@ class Player(pygame.sprite.Sprite):
 
     def reset(self):
         """ Reset the player's position """
+        self.velocity = vector(0, 0)
         self.position = vector(self.starting_x, self.starting_y)
         self.rect.bottomleft = self.position
 
@@ -1111,10 +1139,7 @@ while running:
             # Player wants to fire
             if event.key == pygame.K_UP:
                 my_player.fire()
-            # Rain zombies
-            if event.key == pygame.K_RETURN:
-                zombie = Zombie(my_platform_group, my_portal_group, 2, 7)
-                my_zombie_group.add(zombie)
+
                 
     # Blit the background
     display_surface.blit(background_image, background_rect)
