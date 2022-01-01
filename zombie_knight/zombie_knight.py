@@ -24,12 +24,14 @@ class Game():
         """ Initialize the game """
         # Set constant variables
         self.STARTING_ROUND_TIME = 30
+        self.STARTING_ZOMBIE_CREATION_TIME = 5
         
         # Set game values
         self.score = 0
         self.round_number = 1
         self.frame_count = 0
         self.round_time = self.STARTING_ROUND_TIME
+        self.zombie_creation_time = self.STARTING_ZOMBIE_CREATION_TIME
         
         # Set fonts
         self.title_font = pygame.font.Font("zombie_knight/fonts/Poultrygeist.ttf", 48)
@@ -53,6 +55,9 @@ class Game():
             
         # Check for gameplay collisions
         self.check_collisions()
+        
+        # Add zombies if zombie creation time is met
+        self.add_zombie()
     
     def draw(self):
         """ Draw the game HUD """    
@@ -93,7 +98,12 @@ class Game():
         
     def add_zombie(self):
         """ Add a zombie to the game """
-        pass
+        # Check to add a zombie every second
+        if self.frame_count % FPS == 0:
+            # Only add zombie if zombie creation time passed
+            if self.round_time % self.zombie_creation_time == 0:
+                zombie = Zombie(self.platform_group, self.portal_group, self.round_number, 5 + self.round_number)
+                self.zombie_group.add(zombie)
     
     def check_collisions(self):
         """ Check collisions that affect gameplay """
