@@ -40,6 +40,16 @@ s_X, s_Y = (ball_speed, ball_speed)
 ball_rect.topleft = (b_X, b_Y)
 
 # brick init
+brick = pygame.image.load("brick.png")
+bricks = []
+for y in range(5):
+    brick_Y = (y * 24) + 100
+    for x in range(10):
+        brick_X = (x * 31) + 245
+        width = brick.get_width()
+        height = brick.get_height()
+        rect = pygame.Rect(brick_X,brick_Y,width,height)
+        bricks.append(rect)
 
 
 # Main loop
@@ -48,6 +58,8 @@ while running:
     display_surface.fill(BLACK)
     
     # brick draw
+    for b in bricks:
+        display_surface.blit(brick,b)
     
     # bat and ball draw
     display_surface.blit(bat_image, bat_rect)
