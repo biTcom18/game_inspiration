@@ -108,6 +108,18 @@ while running:
         b_Y = player_Y - 8
         s_Y *= -1
     
+    brick_hit_index = ball_rect.collidelist(bricks)
+    if brick_hit_index >= 0:
+        hb = bricks[brick_hit_index]
+        
+        m_x = b_X + 4
+        m_y = b_Y + 4
+        if m_x > hb.x + hb.width or m_x < hb.x:
+            s_X *= -1
+        else:
+            s_Y *= -1
+        del (bricks[brick_hit_index])
+    
     # Update display and tick the clock
     pygame.display.update()
     clock.tick(FPS)
