@@ -59,6 +59,8 @@ while running:
             running = False
         
         elif event.type == pygame.MOUSEMOTION:
+            if not ball_served:
+                ball_served = True
             mouse_x, mouse_y = event.pos
             if (mouse_x < 800 - 55):
                 bat_rect.topleft = (mouse_x, player_Y)
@@ -67,9 +69,12 @@ while running:
             
             
     # main game logic
-    b_X += s_X
-    b_Y += s_Y
-    ball_rect.topleft = (b_X, b_Y)
+    if ball_served:
+        b_X += s_X
+        b_Y += s_Y
+        ball_rect.topleft = (b_X, b_Y)
+        
+    # collision detection
     
     if (b_Y <= 0):
         b_Y = 0
@@ -87,7 +92,9 @@ while running:
         b_X = 800 - 8
         s_X *= -1
     
-    # collision detection
+    if ball_rect.colliderect(bat_rect):
+        b_Y = player_Y - 8
+        s_Y *= -1
     
     # Update display and tick the clock
     pygame.display.update()
