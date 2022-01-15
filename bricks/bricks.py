@@ -93,8 +93,11 @@ while running:
         s_Y *= -1
         
     if (b_Y >= 600-8):
-        b_Y = 600 - 8
-        s_Y *= -1
+        ball_served = False
+        b_X, b_Y = (24, ball_start_Y)
+        ball_speed = 3
+        s_X, s_Y = (ball_speed, ball_speed)
+        ball_rect.topleft = (b_X, b_Y)
     
     if (b_X <= 0):
         b_X = 0
