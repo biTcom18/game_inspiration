@@ -18,8 +18,17 @@ clock = pygame.time.Clock()
 BLACK = (0, 0, 0)
 
 # Set game values
+player_Y = 540
+mouse_x = 0
+mouse_y = player_Y
 
-# bat init
+# Bat initialization
+bat_image = pygame.image.load("bat.png")
+bat_rect = bat_image.get_rect()
+
+
+
+
 # ball init
 # brick init
 
@@ -32,6 +41,7 @@ while running:
     # brick draw
     
     # bat and ball draw
+    display_surface.blit(bat_image, bat_rect)
     
     # all events
     for event in pygame.event.get():
