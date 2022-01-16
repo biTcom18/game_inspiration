@@ -67,8 +67,12 @@ def headHitBody(gamedata):
 def headHitWall(map, gamedata):
     return False
 
-def drawData(surface,gamedata):
-    pass
+def drawData(display_surface,gamedata):
+    text = "Lives : {0}, Level : {1}"
+    info = text.format(gamedata.lives, gamedata.level)
+    text = font.render(info, 0, WHITE)
+    textpos = text.get_rect(centerx = WINDOW_WIDTH / 2, top = 32)
+    display_surface.blit(text, textpos)
 
 def drawGameOver(display_surface):
     text_1 = font.render("G a m e    O v e r", True, WHITE)
