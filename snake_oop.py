@@ -1,4 +1,4 @@
-import pygame
+import pygame, os, sys 
 import random
 
 from pygame.locals import *
@@ -17,8 +17,9 @@ pygame.display.set_caption("Snake")
 
 BLACK = (0, 0, 0)
 PURPLE = (255, 0, 255)
+WHITE = (255, 255, 255)
 
-font = pygame.font.Font("AttackGraffiti.ttf", 32)
+font = pygame.font.Font("AttackGraffiti.ttf", 30)
 
 
 # Define classes
@@ -69,8 +70,15 @@ def headHitWall(map, gamedata):
 def drawData(surface,gamedata):
     pass
 
-def drawGameOver(surface):
-    pass 
+def drawGameOver(display_surface):
+    text_1 = font.render("G a m e    O v e r", True, WHITE)
+    text_2 = font.render("S p a c e  to  play or close the window", True, WHITE) 
+    cx = WINDOW_WIDTH / 2
+    cy = WINDOW_HEIGHT / 2
+    textpos_1 = text_1.get_rect(centerx = cx, top = cy - 48)
+    textpos_2 = text_2.get_rect(centerx = cx, top = cy)
+    display_surface.blit(text_1, textpos_1)
+    display_surface.blit(text_2, textpos_2)
 
 def drawWalls(surface, img, map):
     pass
@@ -92,11 +100,11 @@ images['berry'].set_colorkey(PURPLE)
 
 snakemap = loadMapFile('map.txt')
 data = GameData()
-running = True
+quitGame = False
 isPlaying = False
 
 # Main loop
-while running:
+while not quitGame:
     if isPlaying:
         x = random.randint(1, 38)
         y = random.randint(1, 28)
@@ -107,7 +115,8 @@ while running:
         
         for event in pygame.event.get():
             if event.type == QUIT:
-                running = False
+                pygame.quit()
+                sys.exit()
                 
         # Do update stuff here
         
@@ -119,19 +128,21 @@ while running:
         # Do drawing stuff here
     else:
         keys = pygame.key.get_pressed()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
         
         if (keys[K_SPACE]):
             isPlaying = True
             data = None
             data = GameData()
-            drawGameOver(display_surface)    
+        drawGameOver(display_surface)    
     
     pygame.display.update()
     clock.tick(FPS)
                 
             
-# End the game
-pygame.quit()
 
 
 
