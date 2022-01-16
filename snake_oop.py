@@ -80,10 +80,10 @@ def drawGameOver(display_surface):
     display_surface.blit(text_1, textpos_1)
     display_surface.blit(text_2, textpos_2)
 
-def drawWalls(surface, img, map):
+def drawWalls(display_surface, img, map):
     pass
 
-def drawSnake(surface, img, gamedata):
+def drawSnake(display_surface, img, gamedata):
     pass
 
 def updateGame(gamedata, gameTime):
@@ -125,7 +125,14 @@ while not quitGame:
         if isPlaying:
             display_surface.fill(BLACK)
             
-        # Do drawing stuff here
+            # Do drawing stuff here
+            drawWalls(display_surface, images['wall'], snakemap)
+            display_surface.blit(images['berry'], rrect)
+            drawSnake(display_surface, images['snake'], data)
+            drawData(display_surface, data)
+             
+        
+        
     else:
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
