@@ -81,7 +81,18 @@ def drawGameOver(display_surface):
     display_surface.blit(text_2, textpos_2)
 
 def drawWalls(display_surface, img, map):
-    pass
+    row = 0
+    for line in map:
+        col = 0
+        for char in line:
+            if (char == '1'):
+                imgRect = img.get_rect()
+                imgRect.left = col * 16
+                imgRect.top = row * 16
+                display_surface.blit(img, imgRect)
+                
+            col += 1
+        row += 1
 
 def drawSnake(display_surface, img, gamedata):
     pass
