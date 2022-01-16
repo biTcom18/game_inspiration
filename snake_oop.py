@@ -55,7 +55,10 @@ def positionBerry(gamedata):
     pass
 
 def loadMapFile(fileName):
-    return None
+    f = open(fileName, 'r')
+    content = f.readlines()
+    f.close()
+    return content
 
 def headHitBody(gamedata):
     return False
@@ -79,7 +82,10 @@ def updateGame(gamedata, gameTime):
     pass
 
 def loadImages():
-    return {}
+    wall = pygame.image.load('wall.png')
+    raspberry = pygame.image.load('berry.png')
+    snake = pygame.image.load('snake.png')
+    return {'wall':wall, 'berry': raspberry, 'snake': snake}
 
 images = loadImages()
 images['berry'].set_colorkey(PURPLE)
