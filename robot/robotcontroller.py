@@ -1,4 +1,6 @@
-class RobotController(oblect):
+from robotmodel import RobotModel
+
+class RobotController(object):
     def __init__(self, robots):
         self.robots = robots
 
@@ -8,19 +10,20 @@ class RobotController(oblect):
             if robot.getTimer() >= 0.125:
                 robot.nextFrame()
 
-            velocity = self.multiply(robot.getVelocity(), deltaTime)
+            speed = self.multiply(robot.getSpeed(), deltaTime)
             pos = robot.getPosition()
 
-            x, y = self.add(pos, velocity)
+            x, y = self.add(pos, speed)
 
-            sx, sy = robot.getVelocity()
+            sx, sy = robot.getSpeed()
 
             if x < 0:
                 x = 0
                 sx *= -1
             elif x > 607:
+                x = 607
                 sx *= -1
-            
+
             if y < 0:
                 y = 0
                 sy *= -1
@@ -29,21 +32,20 @@ class RobotController(oblect):
                 sy *= -1
 
             robot.setPosition((x, y))
-            robot.setVelocity((sx, sy))
-    
-    def multiply(self, velocity, deltaTime):
-        x = velocity[0] * deltaTime
-        y = velocity[1] * deltaTime
+            robot.setSpeed((sx, sy))           
+
+    def multiply(self, speed, deltaTime):
+        x = speed[0] * deltaTime
+        y = speed[1] * deltaTime
 
         return (x, y)
 
-    def add(self, position, velocity):
-        x = position[0] + velocity[0]
-        y = position[1] + velocity[1]
+    def add(self, position, speed):
+        x = position[0] + speed[0]
+        y = position[1] + speed[1]
 
         return (x, y)
 
-        
 
 
 

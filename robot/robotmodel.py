@@ -1,33 +1,31 @@
-
-# The model class, contains just the data for the robot
+# Robot model class. Contains data of robots
 class RobotModel(object):
-
-    def __init__(self, x, y, frame, velocity):
+    def __init__(self, x, y, frame, speed):
         self.x = x
         self.y = y
         self.frame = frame
-        self.speed = velocity
-        self.timer = 0
-        # We will use 'timer' member field to control the current frame of the robot 
-
+        self.speed = speed
+        self.timer = 0  
+    
     def setPosition(self, newPosition):
         self.x, self.y = newPosition
 
+    def getPosition(self):
+        return (self.x, self.y)
+
     def getFrame(self):
         return self.frame
-    
+
     def nextFrame(self):
         self.timer = 0
         self.frame += 1
         self.frame %= 4
-
+    
     def getTimer(self):
         return self.timer
 
-    def getVelocity(self):
-        return self.velocity
-
-    def setVelocity(self, velocity):
-        self.velocity = velocity
-
-
+    def getSpeed(self):
+        return self.speed
+    
+    def setSpeed(self, speed):
+        self.speed = speed
