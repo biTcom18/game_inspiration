@@ -1,1 +1,1 @@
-# game_inspiration
+# Some Pygame examples for educational purposes
