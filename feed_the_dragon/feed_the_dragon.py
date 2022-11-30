@@ -33,7 +33,7 @@ BLACK = (0, 0, 0)
 
 
 # Set fonts
-font = pygame.font.Font("AttackGraffiti.ttf", 32)
+font = pygame.font.Font("AttackGraffiti.ttf", 24)
 
 # Set text
 score_text = font.render("Score :" + str(score), True, GREEN, DARKGREEN)
