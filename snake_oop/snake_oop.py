@@ -146,6 +146,12 @@ while not quit_game:
         rrect.top = data.berry.y * 16
 
         # Do update staff
+        update_game(data, clock.get_time())
+        crashed = head_hit_wall(snakemap, data) or head_hit_body(data)
+        if crashed:
+            lose_life(data)
+            position_berry(data)
+            
         is_playing = (data.lives > 0)
         if is_playing:
                 display_surface.fill((0, 0, 0))
