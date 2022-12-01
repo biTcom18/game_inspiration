@@ -78,8 +78,20 @@ def head_hit_wall(map, gamedata):
 def draw_data(display_surface, gamedata):
     pass
 
-def draw_game_over(display_surface):
-    pass
+def drawGameOver(surface):
+    # string, anti-alias?, colour
+    text1 = font.render("Game Over", 1, (255, 255, 255))
+    text2 = font.render("Space to play or close the window", 1, (255, 255, 255))
+    # named parameters
+
+    cx = surface.get_width() / 2
+    cy = surface.get_height() / 2
+
+    textpos1 = text1.get_rect(centerx=cx, top=cy - 48)
+    textpos2 = text2.get_rect(centerx=cx, top=cy)
+    surface.blit(text1, textpos1)
+    surface.blit(text2, textpos2)
+
 
 def draw_walls(display_surface, img, map):
     pass
