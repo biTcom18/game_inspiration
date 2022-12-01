@@ -95,10 +95,10 @@ def draw_walls(surface, img, map):
         col = 0
         for char in line:
             if ( char == '1'):
-                imgRect = img.get_rect()
-                imgRect.left = col * 16
-                imgRect.top = row * 16
-                surface.blit(img, imgRect)
+                img_rect = img.get_rect()
+                img_rect.left = col * 16
+                img_rect.top = row * 16
+                surface.blit(img, img_rect)
             col += 1
         row += 1
 
@@ -138,8 +138,20 @@ def update_game(gamedata, gametime):
             b.x = newpos.x
             b.y = newpos.y
             newpos = Position(temp.x, temp.y)
-            
+    
+    # snake movement
 
+    keys = pygame.key.get_pressed()
+                
+    if (keys[pygame.K_RIGHT] and gamedata.direction != 1):
+        gamedata.direction = 0
+    elif (keys[pygame.K_LEFT] and gamedata.direction != 0):
+        gamedata.direction = 1
+    elif(keys[pygame.K_UP] and gamedata.direction != 3):
+        gamedata.direction = 2 
+    elif(keys[pygame.K_DOWN] and gamedata.direction != 2):
+        gamedata.direction = 3
+        
 
 
 
