@@ -16,14 +16,17 @@ pygame.display.set_caption('Snake Game')
 font = pygame.font.Font(None, 32)
 
 def load_images():
-        return {}
+    wall = pygame.image.load('wall.png')
+    raspberry = pygame.image.load('berry.png')
+    snake = pygame.image.load('snake.png')
+    return {'wall': wall, 'berry': raspberry, 'snake': snake}
 
 images = load_images()
 images['berry'].set_colorkey((255, 0, 255))
 
 
 def load_map_file(filename):
-        return None
+    return None
 
 snakemap = load_map_file('map.txt')
 
