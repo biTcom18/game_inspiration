@@ -26,7 +26,10 @@ images['berry'].set_colorkey((255, 0, 255))
 
 
 def load_map_file(filename):
-    return None
+    f = open(filename, 'r')
+    content = f.readlines()
+    f.close()
+    return content
 
 snakemap = load_map_file('map.txt')
 
