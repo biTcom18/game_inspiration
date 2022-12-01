@@ -115,7 +115,32 @@ def draw_snake(display_surface, img, gamedata):
     display_surface.blit(img, dest, src)
 
 def update_game(gamedata, gametime):
-    pass
+    gamedata.tick -= gametime
+    head = gamedata.blocks[0]
+    if gamedata.tick < 0:
+        gamedata.tick += gamedata.speed
+        gamedata.frame += 1
+        gamedata.frame % 2
+        if gamedata.direction == 0:
+            move = (1,0)
+        elif gamedata.direction == 1:
+            move = (-1,0)
+        elif gamedata.direction == 2:
+            move = (0,-1)
+        else:
+            move = (0,1)
+
+        newpos = Position(head.x + move[0], head.y + move[1])
+
+        first = True
+        for b in gamedata.blocks:
+            temp = Position(b.x, b.y)
+            b.x = newpos.x
+            b.y = newpos.y
+            newpos = Position(temp.x, temp.y)
+            
+
+
 
 
 def load_images():
