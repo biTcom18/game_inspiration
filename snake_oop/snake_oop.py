@@ -67,10 +67,13 @@ def head_hit_wall(map, gamedata):
     return False
 
 def draw_data(display_surface, gamedata):
-    pass
+    text = "Lives = {0}, level = {1}"
+    info = text.format(gamedata.lives, gamedata.level)
+    text = font.render(info, 0,(255, 255, 255))
+    textpos = text.get_rect(centerx = display_surface.get_width()/2, top = 32)
+    display_surface.blit(text, textpos)
 
 def draw_game_over(surface):
-    # string, anti-alias?, colour
     text1 = font.render("Game Over", 1, (255, 255, 255))
     text2 = font.render("Space to play or close the window", 1, (255, 255, 255))
     # named parameters
