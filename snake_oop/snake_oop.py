@@ -104,7 +104,15 @@ def draw_walls(surface, img, map):
 
 
 def draw_snake(display_surface, img, gamedata):
-    pass
+    first = True
+    for b in gamedata.blocks:
+        dest = (b.x * 16, b.y * 16, 16, 16)
+        if first:
+            first = False
+            src = (((gamedata.direction * 2) + gamedata.frame) * 16, 0, 16, 16)
+        else:
+            src = (8*16, 0, 16, 16)
+    display_surface.blit(img, dest, src)
 
 def update_game(gamedata, gametime):
     pass
